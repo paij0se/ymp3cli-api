@@ -9,6 +9,7 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/paij0se/ymp3cli-api/src/database"
 )
 
@@ -77,6 +78,11 @@ func displayUser(c echo.Context) error {
 
 func main() {
 	e := echo.New()
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
+
 	e.GET("/", displayUser)
 	e.POST("/user", postUser)
 	port, ok := os.LookupEnv("PORT")
