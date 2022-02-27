@@ -56,7 +56,6 @@ func displayUser(c echo.Context) error {
 	if err != nil {
 		fmt.Fprintf(c.Response(), "Error")
 	}
-	// read the last record
 	row, err := sqliteDatabase.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
 	if err != nil {
 		fmt.Fprintf(c.Response(), "Error")
