@@ -44,7 +44,7 @@ func postUser(c echo.Context) error {
 		if err != nil {
 			fmt.Fprintf(c.Response(), "Error")
 		}
-		fmt.Fprintf(c.Response(), `{"id": %d, "last-user": "%s"}`, id, user)
+		fmt.Fprintf(c.Response(), `{"id": %d, "lastUser": "%s"}`, id, user)
 	}
 	return nil
 
@@ -71,7 +71,7 @@ func displayUser(c echo.Context) error {
 		if err != nil {
 			fmt.Fprintf(c.Response(), "Error")
 		}
-		fmt.Fprintf(c.Response(), `{"id": %d, "last-user": "%s"}`, id, user)
+		fmt.Fprintf(c.Response(), `{"id": %d, "lastUser": "%s"}`, id, user)
 	}
 	return nil
 }
