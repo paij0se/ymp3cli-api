@@ -52,6 +52,8 @@ func postUser(c echo.Context) error {
 func displayUser(c echo.Context) error {
 	c.Response().Header().Set("Content-Type", "application/json")
 	c.Response().WriteHeader(http.StatusCreated)
+	c.Request().Header.Set("allow-access-control-origin", "*")
+	c.Request().Header.Set("allow-access-origin", "*")
 	sqliteDatabase, err := sql.Open("sqlite3", "./src/database/database.db")
 	if err != nil {
 		fmt.Fprintf(c.Response(), "Error")
