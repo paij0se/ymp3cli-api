@@ -12,13 +12,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type user struct {
-	User string
+type name struct {
+	Name string
 }
 
 func createDB(db *sql.DB) {
 	// create users table if not exists
-	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR NOT NULL);"
+	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT NOT NULL);"
 	statement, err := db.Prepare(createTableUsers)
 	if err != nil {
 		log.Fatal(err)
@@ -27,38 +27,39 @@ func createDB(db *sql.DB) {
 	log.Println("Created table users")
 }
 
-func insertData(db *sql.DB, id string, user string) {
+func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
-	insertUser := "INSERT INTO users(name)VALUES(now());"
+	// insert data in the name column
+	insertUser := "INSERT INTO users (Name) VALUES (?);"
 	statement, err := db.Prepare(insertUser)
 	// This is good to avoid SQL injections
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	_, err = statement.Exec(user) // Execute SQL Query
+	_, err = statement.Exec(name) // Execute SQL Query
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 }
 
-func Db(id string, user string) {
+func Db(id string, name string) {
 	postgres, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	createDB(postgres)
-	insertData(postgres, id, user)
+	insertData(postgres, id, name)
 }
 
 func postDataUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
-	var user user
+	var user name
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 	json.Unmarshal(reqBody, &user)
-	u := user.User
+	u := user.Name
 	Db("0001", u)
 	c.JSON(200, gin.H{
 		"message": u,
