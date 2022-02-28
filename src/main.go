@@ -18,12 +18,7 @@ type user struct {
 
 func createDB(db *sql.DB) {
 	// create users table if not exists
-	createTableUsers := `
-	CREATE TABLE IF NOT EXISTS users ( 
-		id INTEGER PRIMARY KEY AUTOINCREMENT,
-		User TEXT NOT NULL
-	);
-	`
+	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR NOT NULL);"
 	statement, err := db.Prepare(createTableUsers)
 	if err != nil {
 		log.Fatal(err)
@@ -35,13 +30,17 @@ func createDB(db *sql.DB) {
 func insertData(db *sql.DB, id string, user string) {
 	log.Println("Inserting data")
 	insertUser := `
-	INSERT INTO users (User) VALUES ($1);
+	INSERT INTO users (name) VALUES ($1);
 	`
 	statement, err := db.Prepare(insertUser)
+	// This is good to avoid SQL injections
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalln(err.Error())
 	}
-	statement.Exec(user)
+	_, err = statement.Exec(user) // Execute SQL Query
+	if err != nil {
+		log.Fatalln(err.Error())
+	}
 }
 
 func Db(id string, user string) {
@@ -82,14 +81,14 @@ func displayUser(c *gin.Context) {
 	defer row.Close()
 	for row.Next() {
 		var id int
-		var user string
-		err = row.Scan(&id, &user)
+		var name string
+		err = row.Scan(&id, &name)
 		if err != nil {
 			log.Printf("Error scanning row: %q", err)
 		}
 		c.JSON(200, gin.H{
 			"id":       id,
-			"lastUser": user,
+			"lastUser": name,
 		})
 	}
 
