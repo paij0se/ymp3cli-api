@@ -3,65 +3,81 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"net/http"
+	"log"
 	"os"
 
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
-	"github.com/paij0se/ymp3cli-api/src/database"
+	"github.com/gin-gonic/gin"
+	_ "github.com/heroku/x/hmetrics/onload"
+	_ "github.com/lib/pq"
 )
 
 type user struct {
 	User string
 }
 
-func postUser(c echo.Context) error {
-	c.Response().Header().Set("Content-Type", "application/json")
-	c.Response().WriteHeader(http.StatusCreated)
+func createDB(db *sql.DB) {
+	// create users table if not exists
+	createTableUsers := `
+	CREATE TABLE IF NOT EXISTS users ( 
+		id INTEGER PRIMARY KEY AUTOINCREMENT,
+		User TEXT NOT NULL
+	);
+	`
+	statement, err := db.Prepare(createTableUsers)
+	if err != nil {
+		log.Fatal(err)
+	}
+	statement.Exec()
+	log.Println("Created table users")
+}
+
+func insertData(db *sql.DB, id string, user string) {
+	log.Println("Inserting data")
+	insertUser := `
+	INSERT INTO users (User) VALUES ($1);
+	`
+	statement, err := db.Prepare(insertUser)
+	if err != nil {
+		log.Fatal(err)
+	}
+	statement.Exec(user)
+}
+
+func Db(id string, user string) {
+	postgres, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	createDB(postgres)
+	insertData(postgres, id, user)
+}
+
+func postDataUser(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
 	var user user
-	reqBody, err := ioutil.ReadAll(c.Request().Body)
+	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
-		fmt.Fprintf(c.Response(), "Error")
+		log.Fatal(err)
 	}
-	json.Unmarshal([]byte(reqBody), &user)
+	json.Unmarshal(reqBody, &user)
 	u := user.User
-	database.Db("0001", u)
-	sqliteDatabase, err := sql.Open("sqlite3", "./src/database/database.db")
-	if err != nil {
-		fmt.Fprintf(c.Response(), "Error")
-	}
-	row, err := sqliteDatabase.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
-	if err != nil {
-		fmt.Fprintf(c.Response(), "Error")
-	}
-	defer row.Close()
-	for row.Next() {
-		var id int
-		var user string
-		err = row.Scan(&id, &user)
-		if err != nil {
-			fmt.Fprintf(c.Response(), "Error")
-		}
-		fmt.Fprintf(c.Response(), `{"id": %d, "lastUser": "%s"}`, id, user)
-	}
-	return nil
+	Db("0001", u)
+	c.JSON(200, gin.H{
+		"message": u,
+	})
 
 }
 
-func displayUser(c echo.Context) error {
-	c.Response().Header().Set("Content-Type", "application/json")
-	c.Response().WriteHeader(http.StatusCreated)
-	c.Request().Header.Set("Access-Control-Allow-Origin", "*")
-	c.Request().Header.Set("Access-Control-Allow-Headers", "Content-Type")
-	sqliteDatabase, err := sql.Open("sqlite3", "./src/database/database.db")
+func displayUser(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	postgres, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Fprintf(c.Response(), "Error")
+		log.Fatal(err)
 	}
-	row, err := sqliteDatabase.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
+	row, err := postgres.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
 	if err != nil {
-		fmt.Fprintf(c.Response(), "Error")
+		log.Fatal(err)
 	}
 	defer row.Close()
 	for row.Next() {
@@ -69,27 +85,42 @@ func displayUser(c echo.Context) error {
 		var user string
 		err = row.Scan(&id, &user)
 		if err != nil {
-			fmt.Fprintf(c.Response(), "Error")
+			log.Printf("Error scanning row: %q", err)
 		}
-		fmt.Fprintf(c.Response(), `{"id": %d, "lastUser": "%s"}`, id, user)
+		c.JSON(200, gin.H{
+			"id":       id,
+			"lastUser": user,
+		})
 	}
-	return nil
+
+}
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+
+		c.Header("Access-Control-Allow-Origin", "*")
+		c.Header("Access-Control-Allow-Credentials", "true")
+		c.Header("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Header("Access-Control-Allow-Methods", "POST,HEAD,PATCH, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 func main() {
-	e := echo.New()
-	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
-	}))
+	router := gin.New()
+	router.Use(CORSMiddleware())
+	router.POST("/user", postDataUser)
+	router.GET("/", displayUser)
+	router.Use(gin.Logger())
+	port := os.Getenv("PORT")
 
-	e.GET("/", displayUser)
-	e.POST("/user", postUser)
-	port, ok := os.LookupEnv("PORT")
-	if !ok {
-		port = "5000"
+	if port == "" {
+		log.Fatal("PORT=8080 go run main.go")
 	}
-	fmt.Printf("server on port: %s", port)
-	e.Logger.Fatal(e.Start(":" + port))
-
+	router.Run(":" + port)
 }
