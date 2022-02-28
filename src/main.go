@@ -27,7 +27,7 @@ func createDB(db *sql.DB) {
 	log.Println("Created table users")
 }
 
-func insertData(db *sql.DB, id string, user string) {
+func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
 	insertUser := `
 	INSERT INTO users (name) VALUES ($1);
@@ -37,19 +37,19 @@ func insertData(db *sql.DB, id string, user string) {
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
-	_, err = statement.Exec(user) // Execute SQL Query
+	_, err = statement.Exec(name) // Execute SQL Query
 	if err != nil {
 		log.Fatalln(err.Error())
 	}
 }
 
-func Db(id string, user string) {
+func Db(id string, name string) {
 	postgres, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
 		log.Fatal(err)
 	}
 	createDB(postgres)
-	insertData(postgres, id, user)
+	insertData(postgres, id, name)
 }
 
 func postDataUser(c *gin.Context) {
