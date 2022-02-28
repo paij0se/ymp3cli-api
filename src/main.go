@@ -29,9 +29,7 @@ func createDB(db *sql.DB) {
 
 func insertData(db *sql.DB, id string, user string) {
 	log.Println("Inserting data")
-	insertUser := `
-	INSERT INTO users (name) VALUES ($1);
-	`
+	insertUser := "INSERT INTO users(name)VALUES(now());"
 	statement, err := db.Prepare(insertUser)
 	// This is good to avoid SQL injections
 	if err != nil {
