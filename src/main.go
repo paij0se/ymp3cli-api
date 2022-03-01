@@ -30,7 +30,7 @@ func createDB(db *sql.DB) {
 
 func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
-	insertUser := "INSERT INTO users (Name) VALUES ($1) RETURNING id;"
+	insertUser := "INSERT INTO users (name) VALUES ($1) RETURNING name;"
 	err := db.QueryRow(insertUser, name).Scan(&id)
 	if err != nil {
 		log.Println(err)
@@ -57,10 +57,9 @@ func postDataUser(c *gin.Context) {
 		log.Fatal(err)
 	}
 	json.Unmarshal(reqBody, &user)
-	u := user.Name
-	Db("0001", u)
+	Db("0001", user.Name)
 	c.JSON(200, gin.H{
-		"message": u,
+		"message": "added",
 	})
 
 }
