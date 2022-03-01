@@ -34,21 +34,21 @@ func insertData(db *sql.DB, id string, name string) {
 	fmt.Print("3")
 	insertUser := "INSERT INTO users (id,name) VALUES ($1,$2)"
 	fmt.Println("2")
-	statement, err := db.Prepare(insertUser)
+	statement, err := db.Prepare(insertUser) // aqui esta el jodido error
 	// This is good to avoid SQL injections
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err)
 	}
 	_, err = statement.Exec(name) // Execute SQL Query
 	if err != nil {
-		log.Fatalln(err.Error())
+		log.Println(err)
 	}
 }
 
 func Db(id string, name string) {
 	postgres, err := sql.Open("postgres", os.Getenv("DATABASE_URL"))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	createDB(postgres)
 	// insert data
@@ -81,7 +81,7 @@ func displayUser(c *gin.Context) {
 	}
 	row, err := postgres.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 	defer row.Close()
 	for row.Next() {
@@ -124,7 +124,7 @@ func main() {
 	port := os.Getenv("PORT")
 
 	if port == "" {
-		log.Fatal("PORT=8080 go run main.go")
+		log.Println("$PORT must be set")
 	}
 	router.Run(":" + port)
 }
