@@ -19,7 +19,7 @@ type name struct {
 
 func createDB(db *sql.DB) {
 	// create users table if not exists
-	createTableUsers := "CREATE TABLE IF NOT EXISTS ymp3cli (id SERIAL PRIMARY KEY,name TEXT);"
+	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY,name TEXT);"
 	statement, err := db.Prepare(createTableUsers)
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +30,7 @@ func createDB(db *sql.DB) {
 
 func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
-	insertUser := "INSERT INTO ymp3cli (name) VALUES ($1) RETURNING id;"
+	insertUser := "INSERT INTO users (name) VALUES ($1) RETURNING id;"
 	err := db.QueryRow(insertUser, name).Scan(&id)
 	if err != nil {
 		log.Println(err)
@@ -71,7 +71,7 @@ func displayUser(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	row, err := postgres.Query("SELECT * FROM ymp3cli ORDER BY id DESC LIMIT 1")
+	row, err := postgres.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
 	if err != nil {
 		log.Println(err)
 	}
