@@ -30,12 +30,12 @@ func createDB(db *sql.DB) {
 
 func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
-	insertUser := "INSERT INTO users (name) VALUES ($1) RETURNING id;"
+	insertUser := "INSERT INTO users (Name) VALUES ($1) RETURNING id;"
 	err := db.QueryRow(insertUser, name).Scan(&id)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Println("New record ID is:", id)
+	fmt.Println("New record ID is:", id, name)
 }
 
 func Db(id string, name string) {
