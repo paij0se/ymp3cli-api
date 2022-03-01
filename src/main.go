@@ -19,7 +19,7 @@ type name struct {
 
 func createDB(db *sql.DB) {
 	// create users table if not exists
-	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT NOT NULL);"
+	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY,name TEXT);"
 	statement, err := db.Prepare(createTableUsers)
 	if err != nil {
 		log.Fatal(err)
