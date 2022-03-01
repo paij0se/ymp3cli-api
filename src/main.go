@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -30,7 +31,9 @@ func createDB(db *sql.DB) {
 func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
 	// insert data in the name column
-	insertUser := "INSERT INTO users (Name) VALUES (?)"
+	fmt.Print("3")
+	insertUser := "INSERT INTO users (id,name) VALUES ($1,$2)"
+	fmt.Println("2")
 	statement, err := db.Prepare(insertUser)
 	// This is good to avoid SQL injections
 	if err != nil {
@@ -48,7 +51,10 @@ func Db(id string, name string) {
 		log.Fatal(err)
 	}
 	createDB(postgres)
+	// insert data
+	fmt.Println("1")
 	insertData(postgres, id, name)
+
 }
 
 func postDataUser(c *gin.Context) {
