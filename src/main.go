@@ -32,14 +32,14 @@ func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
 	// insert data in the name column
 	fmt.Println("3")
-	insertUser := "INSERT INTO users (name) VALUES ($1) RETURNING name;"
+	insertUser := "INSERT INTO users (id) VALUES ($1) RETURNING id;"
 	fmt.Println("2")
-	err := db.QueryRow(insertUser, name).Scan(&name) // aqui esta el jodido error
+	err := db.QueryRow(insertUser, id).Scan(&id) // aqui esta el jodido error
 	// This is good to avoid SQL injections
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Printf("Inserted %s %s\n", id, name)
+	fmt.Printf("Inserted %s %s\n", name, id)
 }
 
 func Db(id string, name string) {
