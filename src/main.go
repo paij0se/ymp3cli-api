@@ -30,16 +30,12 @@ func createDB(db *sql.DB) {
 
 func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
-	// insert data in the name column
-	fmt.Println("3")
-	insertUser := "INSERT INTO users (id,name) VALUES ($1,$2) RETURNING id,name;"
-	fmt.Println("2")
-	err := db.QueryRow(insertUser, id, name).Scan(&id, &name) // aqui esta el jodido error
-	// This is good to avoid SQL injections
+	insertUser := "INSERT INTO users (name) VALUES ($1) RETURNING id;"
+	err := db.QueryRow(insertUser, name).Scan(&id)
 	if err != nil {
 		log.Println(err)
 	}
-	fmt.Printf("Inserted %s %s\n", id, name)
+	fmt.Println("New record ID is:", id)
 }
 
 func Db(id string, name string) {
@@ -49,7 +45,6 @@ func Db(id string, name string) {
 	}
 	createDB(postgres)
 	// insert data
-	fmt.Println("1")
 	insertData(postgres, id, name)
 
 }
@@ -63,7 +58,7 @@ func postDataUser(c *gin.Context) {
 	}
 	json.Unmarshal(reqBody, &user)
 	u := user.Name
-	Db("1", u)
+	Db("0001", u)
 	c.JSON(200, gin.H{
 		"message": u,
 	})
