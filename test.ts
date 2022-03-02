@@ -5,9 +5,9 @@ const rawResponse = await fetch("https://ymp3cli-api.herokuapp.com/user", {
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    id:"",
-    Name: "pai",
+    Name: "b",
   }),
 });
+
 const content = await rawResponse.text();
 console.log(content);
