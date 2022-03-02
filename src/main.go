@@ -14,7 +14,8 @@ import (
 )
 
 type name struct {
-	Name string
+	Name     string
+	Password string
 }
 
 func createDB(db *sql.DB) {
@@ -52,11 +53,18 @@ func Db(id string, name string) {
 func postDataUser(c *gin.Context) {
 	c.Header("Content-Type", "application/json")
 	var user name
+	var password name
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 	json.Unmarshal(reqBody, &user)
+	json.Unmarshal(reqBody, &password)
+	if password.Name != "d24250200f82994615e9f4c7336c4aa4457e28d39491cce206f60f89b73594ea98a047edfd8e68afe7705a7b2098cd81cc14043cb52e87c391b8e68c9f65c354" {
+		c.JSON(401, gin.H{
+			"message": "🚫",
+		})
+	}
 	Db("0001", user.Name)
 	c.JSON(200, gin.H{
 		"message": "added",
