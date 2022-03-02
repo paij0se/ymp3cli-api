@@ -21,6 +21,7 @@ func createDB(db *sql.DB) {
 	// create users table if not exists
 	createTableUsers := "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY,name TEXT);"
 	statement, err := db.Prepare(createTableUsers)
+	defer statement.Close()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,10 +33,10 @@ func insertData(db *sql.DB, id string, name string) {
 	log.Println("Inserting data")
 	insertUser := "INSERT INTO users (name) VALUES ($1) RETURNING name;"
 	in, err := db.Query(insertUser, name)
+	defer in.Close()
 	if err != nil {
 		log.Println(err)
 	}
-	defer in.Close()
 	fmt.Println("New record ID is:", id, name)
 }
 
@@ -47,6 +48,8 @@ func Db(id string, name string) {
 	createDB(postgres)
 	// insert data
 	insertData(postgres, id, name)
+	// close conection
+	defer postgres.Close()
 
 }
 
