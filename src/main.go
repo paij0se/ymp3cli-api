@@ -35,7 +35,7 @@ func insertData(db *sql.DB, id string, name string) {
 	if err != nil {
 		log.Println(err)
 	}
-	in.Close()
+	defer in.Close()
 	fmt.Println("New record ID is:", id, name)
 }
 
