@@ -70,7 +70,7 @@ func displayUser(c *gin.Context) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	row, err := postgres.Query("SELECT * FROM users ORDER BY id DESC LIMIT 1")
+	row, err := postgres.Query("SELECT * FROM users ORDER BY name DESC LIMIT 1")
 	if err != nil {
 		log.Println(err)
 	}
