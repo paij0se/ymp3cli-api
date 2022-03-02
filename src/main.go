@@ -64,11 +64,12 @@ func postDataUser(c *gin.Context) {
 		c.JSON(401, gin.H{
 			"message": "🚫",
 		})
+	} else {
+		Db("0001", user.Name)
+		c.JSON(200, gin.H{
+			"message": "added",
+		})
 	}
-	Db("0001", user.Name)
-	c.JSON(200, gin.H{
-		"message": "added",
-	})
 
 }
 

@@ -1,4 +1,4 @@
-const rawResponse = await fetch("http://localhost:8080/user", {
+const rawResponse = await fetch("https://ymp3cli-api.herokuapp.com/user", {
   method: "POST",
   headers: {
     Accept: "application/json",
@@ -9,5 +9,5 @@ const rawResponse = await fetch("http://localhost:8080/user", {
     password:""
   }),
 });
-const content = await rawResponse.json();
+const content = await rawResponse.text();
 console.log(content);
