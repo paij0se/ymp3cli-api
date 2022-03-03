@@ -1,2 +1,2 @@
-# ymp3cli-api
-ymp3cli -> ymp3cli-api.herokuapp.com -> ymp3cli.tk
+# **ymp3cli-api**
+This is the ymp3cli API
