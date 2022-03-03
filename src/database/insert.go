@@ -3,6 +3,8 @@ package database
 import (
 	"database/sql"
 	"log"
+
+	_ "github.com/lib/pq"
 )
 
 func Insert(db *sql.DB, id string, app string, username string) (err error) {
