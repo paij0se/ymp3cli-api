@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"log"
 
+	_ "github.com/lib/pq"
+
 	"github.com/paij0se/ymp3cli-api/src/interfaces"
 )
 
