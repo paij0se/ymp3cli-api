@@ -17,15 +17,15 @@ func GetData(ctx *gin.Context) {
 	)
 
 	reqBody, err := ioutil.ReadAll(ctx.Request.Body)
-
+	log.Println(max)
 	if err != nil {
 		max = 20
 	}
-
+	log.Println(max)
 	if err = json.Unmarshal(reqBody, &max); err != nil {
 		max = 20
 	}
-
+	log.Println(max)
 	db, err := database.Connect()
 
 	if err != nil {
