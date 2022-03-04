@@ -10,22 +10,22 @@ import (
 	"github.com/paij0se/ymp3cli-api/src/interfaces"
 )
 
+type ma2x struct {
+	Max int
+}
+
 func GetData(ctx *gin.Context) {
 	var (
 		API []interfaces.Ymp3cli = []interfaces.Ymp3cli{}
-		max int
+		max ma2x
 	)
 
-	reqBody, err := ioutil.ReadAll(ctx.Request.Body)
-	log.Println(max)
-	if err != nil {
-		max = 20
+	reqBody, _ := ioutil.ReadAll(ctx.Request.Body)
+
+	if err := json.Unmarshal(reqBody, &max); err != nil {
+		max = ma2x{Max: 20}
 	}
-	log.Println(max)
-	if err = json.Unmarshal(reqBody, &max); err != nil {
-		max = 20
-	}
-	log.Println(max)
+
 	db, err := database.Connect()
 
 	if err != nil {
@@ -39,7 +39,7 @@ func GetData(ctx *gin.Context) {
 		return
 	}
 
-	if err = database.Query(db, &API, uint64(max)); err != nil {
+	if err = database.Query(db, &API, uint64(max.Max)); err != nil {
 		log.Println(err.Error())
 
 		ctx.AbortWithStatusJSON(500, gin.H{
