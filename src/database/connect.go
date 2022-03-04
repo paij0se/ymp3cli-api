@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 
-	_ "github.com/heroku/x/hmetrics/onload"
 	_ "github.com/lib/pq"
 )
 

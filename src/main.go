@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 
+	_ "github.com/heroku/x/hmetrics/onload"
 	"github.com/joho/godotenv"
 	"github.com/paij0se/ymp3cli-api/src/routes"
 )
