@@ -19,33 +19,11 @@ func GetData(ctx *gin.Context) {
 	reqBody, err := ioutil.ReadAll(ctx.Request.Body)
 
 	if err != nil {
-		log.Println(err.Error())
-
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"message": "500 - Internal Server Error.",
-			"error":   err.Error(),
-		})
-
-		return
+		max = 20
 	}
 
 	if err = json.Unmarshal(reqBody, &max); err != nil {
-		log.Println(err.Error())
-
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"message": "500 - Internal Server Error.",
-			"error":   err.Error(),
-		})
-
-		return
-	}
-
-	if max == 0 {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"message": "400 - Bad Request.",
-		})
-
-		return
+		max = 20
 	}
 
 	db, err := database.Connect()
