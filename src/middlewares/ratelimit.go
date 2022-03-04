@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -18,9 +19,9 @@ func RateLimit(route string, delay uint64) gin.HandlerFunc {
 	rateList[route] = delay
 
 	return func(ctx *gin.Context) {
-		reqUrl := (ctx.Request.Method + ":" + ctx.Request.RequestURI)
+		reqUrl := (ctx.Request.Method + ":" + ctx.Request.RequestURI + ":" + ctx.ClientIP())
 		dateNow := uint64(time.Now().UnixMilli())
-
+		log.Println(reqUrl)
 		// clear memory.
 		if (dateNow - lastReq) > cPeriod {
 			reqList = make(map[string]uint64)
