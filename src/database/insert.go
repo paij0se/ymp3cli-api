@@ -3,17 +3,16 @@ package database
 import (
 	"database/sql"
 	"log"
-
-	_ "github.com/lib/pq"
 )
 
-func Insert(db *sql.DB, id string, app string, username string) (err error) {
-	insertUser := "INSERT INTO users (app, username) VALUES ($1 $2) RETURNING (app, username);"
-	rows, err := db.Query(insertUser, app, username)
+func Insert(db *sql.DB, id string, client string, username string) (err error) {
+	insertUser := "INSERT INTO users (client, username) VALUES ($1, $2) RETURNING (client, username);"
+	rows, err := db.Query(insertUser, client, username)
 
 	if err == nil {
-		log.Println("The data has been updated, now it is:", id, app, username)
+		log.Println("The data has been updated, now it is:", id, client, username)
 
+		return rows.Close()
 	}
 
 	log.Println(err.Error())

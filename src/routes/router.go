@@ -17,9 +17,9 @@ func SetupRouter(port string) error {
 	})
 
 	// Routes
-	router.GET("/", middlewares.RateLimit(2000), controllers.GetData)
+	router.GET("/", middlewares.RateLimit("GET:/", 500), controllers.GetData)
 
-	router.PUT("/", middlewares.RateLimit(600000), controllers.UpdateData)
+	router.POST("/", middlewares.RateLimit("POST:/", 600000), controllers.UpdateData)
 
 	return router.Run(":" + port)
 }
