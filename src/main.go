@@ -155,7 +155,7 @@ func main() {
 	router := gin.New()
 	router.Use(CORSMiddleware())
 	router.POST("/user", RateLimit(20000), postDataUser)
-	router.GET("/", RateLimit(2000), displayUser)
+	router.GET("/",displayUser)
 	router.Use(gin.Logger())
 	port := os.Getenv("PORT")
 
