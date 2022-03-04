@@ -18,7 +18,7 @@ func RateLimit(route string, delay uint64) gin.HandlerFunc {
 	rateList[route] = delay
 
 	return func(ctx *gin.Context) {
-		reqUrl := ctx.Request.URL.String() + ctx.ClientIP()
+		reqUrl := (ctx.Request.Method + ":" + ctx.Request.RequestURI)
 		dateNow := uint64(time.Now().UnixMilli())
 
 		// clear memory.
@@ -37,7 +37,7 @@ func RateLimit(route string, delay uint64) gin.HandlerFunc {
 			return
 		}
 
-		reqList[reqUrl] = (dateNow + rateList[ctx.Request.Method+":"+ctx.Request.RequestURI])
+		reqList[reqUrl] = (dateNow + rateList[reqUrl])
 		ctx.Next()
 	}
 
