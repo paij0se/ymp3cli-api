@@ -7,8 +7,8 @@ import (
 	"github.com/paij0se/ymp3cli-api/src/interfaces"
 )
 
-func Query(db *sql.DB, API *[]interfaces.Ymp3cli, max uint64) (err error) {
-	row, err := db.Query("SELECT * FROM stats ORDER BY id DESC LIMIT $1;", max)
+func Query(db *sql.DB, API *[]interfaces.Ymp3cli) (err error) {
+	row, err := db.Query("SELECT * FROM stats ORDER BY id DESC LIMIT 1;")
 
 	if err != nil {
 		log.Println(err.Error())
