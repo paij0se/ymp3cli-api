@@ -6,7 +6,7 @@ import (
 )
 
 func Insert(db *sql.DB, id string, client string, username string) (err error) {
-	insertUser := "INSERT INTO stats (client, username) VALUES ($1, $2) RETURNING (client, username);"
+	insertUser := "INSERT INTO users (client, username) VALUES ($1, $2) RETURNING (client, username);"
 	rows, err := db.Query(insertUser, client, username)
 
 	if err == nil {

@@ -9,7 +9,7 @@ import (
 )
 
 func GetData(ctx *gin.Context) {
-	var API []interfaces.Ymp3cli = []interfaces.Ymp3cli{}
+	var API interfaces.Ymp3cli = interfaces.Ymp3cli{}
 
 	db, err := database.Connect()
 
