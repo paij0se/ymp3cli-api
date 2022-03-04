@@ -1,7 +1,0 @@
-src/
-
-.gitignore
-
-go.mod
-go.sum
-README.md
