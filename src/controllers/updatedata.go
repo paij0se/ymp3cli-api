@@ -37,7 +37,7 @@ func UpdateData(ctx *gin.Context) {
 		return
 	}
 
-	if ymp3cli.App == "" || ymp3cli.Username == "" {
+	if ymp3cli.Client == "" || ymp3cli.Username == "" {
 		ctx.AbortWithStatusJSON(400, gin.H{
 			"message": "400 - Bad Request.",
 		})
@@ -58,7 +58,7 @@ func UpdateData(ctx *gin.Context) {
 		return
 	}
 
-	if err = database.Insert(db, "0001", ymp3cli.App, ymp3cli.Username); err != nil {
+	if err = database.Insert(db, "0001", ymp3cli.Client, ymp3cli.Username); err != nil {
 		log.Println(err.Error())
 
 		ctx.AbortWithStatusJSON(500, gin.H{

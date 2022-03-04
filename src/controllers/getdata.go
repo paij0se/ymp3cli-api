@@ -9,10 +9,7 @@ import (
 )
 
 func GetData(ctx *gin.Context) {
-	var (
-		ymp3cli *interfaces.Ymp3cli
-		id      *int
-	)
+	var API interfaces.Ymp3cli = interfaces.Ymp3cli{}
 
 	db, err := database.Connect()
 
@@ -27,7 +24,7 @@ func GetData(ctx *gin.Context) {
 		return
 	}
 
-	if err = database.Query(db, id, ymp3cli); err != nil {
+	if err = database.Query(db, &API); err != nil {
 		log.Println(err.Error())
 
 		ctx.AbortWithStatusJSON(500, gin.H{
@@ -43,10 +40,5 @@ func GetData(ctx *gin.Context) {
 
 	}
 
-	ctx.JSON(200, gin.H{
-		"id": id,
-
-		"app":      ymp3cli.App,
-		"username": ymp3cli.Username,
-	})
+	ctx.JSON(200, API)
 }
