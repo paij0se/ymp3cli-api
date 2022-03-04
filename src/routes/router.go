@@ -10,6 +10,7 @@ func SetupRouter(port string) error {
 	router := gin.New()
 
 	// Middlewares
+	router.Use(middlewares.CORSMiddleware())
 	router.Use(func(c *gin.Context) {
 		c.Header("Content-Type", "application/json")
 
