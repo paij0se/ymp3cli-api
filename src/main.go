@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	_ "github.com/heroku/x/hmetrics/onload"
@@ -16,6 +17,15 @@ import (
 type name struct {
 	Name string
 }
+
+// TODO: Organize this shit
+
+var (
+	lastReq = uint64(time.Now().UnixMilli())
+	cPeriod = uint64(60 * 60 * 1000)
+
+	reqList = make(map[string]uint64)
+)
 
 func createDB(db *sql.DB) {
 	// create users table if not exists
@@ -59,6 +69,9 @@ func postDataUser(c *gin.Context) {
 	reqBody, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		log.Fatal(err)
+	}
+	if len(user.Name) == 0 {
+		user.Name = "Anonymous"
 	}
 	json.Unmarshal(reqBody, &user)
 	Db("0001", user.Name)
@@ -110,11 +123,39 @@ func CORSMiddleware() gin.HandlerFunc {
 	}
 }
 
+func RateLimit(delay uint64) gin.HandlerFunc {
+
+	return func(ctx *gin.Context) {
+		reqUrl := ctx.Request.URL.String() + ctx.ClientIP()
+		dateNow := uint64(time.Now().UnixMilli())
+
+		// clear memory.
+		if (dateNow - lastReq) > cPeriod {
+			reqList = make(map[string]uint64)
+
+		}
+
+		lastReq = dateNow
+
+		if value, key := reqList[reqUrl]; key && dateNow < value {
+			ctx.AbortWithStatusJSON(429, gin.H{
+				"message": "429 - Too Many Requests.",
+			})
+
+			return
+		}
+
+		reqList[reqUrl] = (dateNow + delay)
+		ctx.Next()
+	}
+
+}
+
 func main() {
 	router := gin.New()
 	router.Use(CORSMiddleware())
-	router.POST("/user", postDataUser)
-	router.GET("/", displayUser)
+	router.POST("/user", RateLimit(20000), postDataUser)
+	router.GET("/", RateLimit(2000), displayUser)
 	router.Use(gin.Logger())
 	port := os.Getenv("PORT")
 
